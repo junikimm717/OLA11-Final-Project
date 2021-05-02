@@ -4,6 +4,7 @@
 from sqlalchemy import *
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+import os
 
 engine = create_engine('sqlite:///db.sqlite3', echo=False)
 
@@ -50,4 +51,4 @@ def find_verb(verb: str):
 def exists(verb: str):
     return session.query(verbForm).filter_by(part2=verb).first() is not None
 
-load_verbs("../pkg/tests/verbs.txt")
+load_verbs(os.path.join( os.path.dirname(os.path.realpath(__file__)),"../words/verbs/verbs.txt"))
