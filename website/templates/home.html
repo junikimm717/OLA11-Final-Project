@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block body %}
+<div class="container">
+    <div class="row">
+        <h1> Juni's OLA11 Website </h1>
+    </div>
+    <div class="row">
+        <p>
+            This project was created out of my chronic need to keep making
+            programming projects for myself, which almost always turn into a
+            big pile of mess.
+        </p>
+    </div>
+    <div class="row">
+        <p>
+            As this project is <b> purely an exercise in development, </b> it
+            will not include english-to-latin translation. It will simply
+            include a systematic way to cojugate latin verbs and nouns. Below
+            is a form by which you can make simple get requests to the server
+            and receive results.
+        </p>
+    </div>
+    <div class="row">
+        <h2> Fill out this form if u want verbs </h2>
+        <form method="get" action="{{ url_for("api") }}" id="verbform">
+            <label for="verb"> Enter the verb to conjugate (present infinitive) </label> <br>
+            <input id="verb" name="verb"></input>
+
+            <input type="submit" value="Submit"></input>
+        </form>
+
+        <br><br>
+        <label for="tense"> Choose Tense </label>
+        <select name="tense" id="tense" form="verbform">
+            <option value="present"> Present </option>
+            <option value="imperfect"> Imperfect </option>
+            <option value="future"> Future </option>
+            <option value="perfect"> Perfect </option>
+            <option value="pluperfect"> Pluperfect </option>
+            <option value="future perfect"> Future Perfect </option>
+            <option value="infinitive"> Infinitive </option>
+            <option value="imperative"> Imperative </option>
+        </select> <br><br>
+
+        <label for="voice"> Choose Voice </label>
+        <select name="voice" id="voice" form="verbform">
+            <option value="active"> Active </option>
+            <option value="passive"> Passive </option>
+        </select> <br> <br>
+    </div>
+    <div class="row">
+        <h2> Fill out this form if u want nouns </h2>
+        <form method="get" action="{{ url_for("api") }}" id="nounform">
+            <label for="noun"> Enter the noun to decline (nominative) </label> <br>
+            <input id="noun" name="noun"></input>
+
+            <input type="submit" value="Submit"></input>
+        </form>
+    </div>
+</div>
+{% endblock %}
