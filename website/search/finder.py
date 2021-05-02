@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
 
+#from main import verbForm, db
+
 def find(s: str):
-    return ["moneO", "monEre", "monuI", "monItum"]
+    return ["vocO", "vocAre", "vocAvI", "vocAtum"]
