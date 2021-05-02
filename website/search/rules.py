@@ -1,26 +1,18 @@
 #!/usr/bin/env python3
 
-from enum import Enum
 from .finder import find
 
-class Conjugation(Enum):
-    FIRST = 1
-    SECOND = 2
-    THIRD = 3
-    FOURTH = 4
-    IRREGULAR = 5
-
-def detect_conjugation(verb: str) -> Conjugation:
+def detect_conjugation(verb: str) -> int:
     vowel = verb[-3]
     if vowel == "A":
-        return Conjugation.FIRST
+        return 0
     elif vowel == "E":
-        return Conjugation.SECOND
+        return 1
     elif vowel == "e":
-        return Conjugation.THIRD
+        return 2
     elif vowel == "I":
-        return Conjugation.FOURTH
-    return Conjugation.IRREGULAR
+        return 3
+    return 4
 
 def get_stems(l: list) -> list:
     return [l[1][:-3], l[2][:-1], l[3][:-2]]
@@ -33,18 +25,3 @@ class Verb:
     def add(self, stem:int, endings: list):
         return [self.stems[stem] + endings[i] for i in range(len(endings))]
 
-
-active = [
-    [
-        ["O", "As", "at", "Amus", "Atis", "ant"]
-        ["O", "Es", "et", "Emus", "Etis", "ent"]
-        ["O", "is", "it", "imus", "itis", "unt"]
-        ["O", "Is", "it", "Imus", "Itis", "iunt"]
-    ],
-    [
-        ["bAm", "bAs", "bAt", "bAmus", "bAtis", "bAnt"]
-        ["EbAm", "EbAs", "EbAt", "EbAmus", "EbAtis", "EbAnt"]
-        ["EbAm", "EbAs", "EbAt", "EbAmus", "EbAtis", "EbAnt"]
-        ["iebAm", "iebAs", "iebAt", "iebAmus", "iebAtis", "iebAnt"]
-    ],
-]
