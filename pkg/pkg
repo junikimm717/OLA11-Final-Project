@@ -1,0 +1,45 @@
+#!/bin/bash
+
+# pkg is a script for you to install OLA11 packages.
+# you may install one using the install command or all of them using the all command.
+# in order to clear all packages, use the remove command.
+
+URL="http://localhost:5000"
+
+DIR=$(realpath $(dirname $0))
+
+mkdir -p $DIR/../words/verbs
+
+install() {
+    if [[ $1 -eq 0 || $1 -ge 5 ]]
+    then
+        echo "package $1 does not exist."
+        return
+    fi
+
+    grep "$1" $DIR/pkg.lock > /dev/null
+    if [ $? -eq 0 ]; then
+        echo "package $1 already installed"
+        return
+    fi
+    curl $URL/sources/$1.php | sed "s/<br>//g" >> $DIR/../words/verbs/verbs.txt
+    echo "$1" >> $DIR/pkg.lock
+}
+
+all() {
+    install 1
+    install 2
+    install 3
+    install 4
+}
+
+remove() {
+    echo "This will remove all of your existing packages."
+    rm -rf $DIR/../words/verbs/verbs.txt
+    rm -rf $DIR/pkg.lock
+}
+
+
+CMD=$1
+shift
+$CMD $@
