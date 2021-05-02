@@ -4,7 +4,7 @@
 # you may install one using the install command or all of them using the all command.
 # in order to clear all packages, use the remove command.
 
-URL="http://localhost:5000"
+URL="https://ola11-sources.herokuapp.com/"
 
 DIR=$(realpath $(dirname $0))
 
