@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
-from dataclasses import dataclass
+from main import app
+
 
 def valid(args):
     if "verb" in args:
@@ -15,10 +16,3 @@ def valid(args):
         return args["noun"] != ""
     return False
 
-@dataclass
-class Noun:
-    nominative=""
-
-@dataclass
-class Verb:
-    infinitive=""

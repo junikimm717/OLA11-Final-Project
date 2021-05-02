@@ -2,6 +2,8 @@
 
 from flask import Flask, render_template, url_for, request, abort
 import parser as p
+from search.conjugate import get_conjugation
+import db
 
 app = Flask(__name__)
 
@@ -13,16 +15,30 @@ def index():
 def api():
     if not p.valid(request.args):
         abort(400)
-    return str(request.args)
+    if "verb" in request.args:
+        if not db.exists(request.args["verb"]):
+            abort(404)
+        return str(get_conjugation(request.args["verb"],
+                                   request.args["voice"], request.args["tense"]))
+    return "Declining Nouns is currently not supported."
+
+
+@app.route('/tests')
+def tests():
+    return str()
+
 
 @app.errorhandler(404)
 def handle_404(e):
     return render_template("404.html"), 404
 
+
 @app.errorhandler(400)
 def handle_400(e):
     return render_template("400.html"), 400
 
+def find(s: str):
+    return ["vocO", "vocAre", "vocAvI", "vocAtum"]
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run()
