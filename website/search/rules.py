@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from . import finder
+from db import find_verb
 
 def detect_conjugation(verb: str) -> int:
     vowel = verb[-3]
@@ -21,7 +21,7 @@ def get_stems(lt: list) -> list:
 
 class Verb:
     def __init__(self, verb: str):
-        self.stems = get_stems(finder.find(verb))
+        self.stems = get_stems(find_verb(verb))
         self.conjugation = detect_conjugation(verb)
 
     def add(self, stem: int, endings: list):

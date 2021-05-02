@@ -6,3 +6,4 @@ venv
 /pkg/tests
 *.db
 *.sqlite3
+*.sqlite3-journal
