@@ -30,10 +30,29 @@ class verbForm(Base):
         return [self.part1, self.part2, self.part3, self.part4]
 
 
+class nounForm(Base):
+    __tablename__ = "nouns"
+    id = Column(Integer, primary_key=True)
+    nominative = Column(String)
+    genitive = Column(String)
+    gender = Column(String)
+    istem = Column(Boolean)
+
+    def __init__(self, nominative, genitive, gender, istem=False):
+        self.nominative = nominative
+        self.genitive = genitive
+        self.gender = gender
+        self.istem = istem
+
+    def tolist(self):
+        return [self.nominative, self.genitive, self.gender, self.istem]
+
+
 Base.metadata.create_all(engine)
 
 Session = sessionmaker(bind=engine)
 session = Session()
+
 
 def load_verbs(path: str):
     with open(path, "r") as r:
@@ -42,13 +61,48 @@ def load_verbs(path: str):
             lt = line.split()
             session.add(verbForm(lt[0], lt[1], lt[2], lt[3]))
 
+
+def load_nouns(path: str):
+    with open(path, "r") as r:
+        lines = r.read().splitlines()
+        for line in lines:
+            lt = line.split()
+            session.add(nounForm(lt[0], lt[1], lt[2], len(lt) == 4))
+
+
 def find_verb(verb: str):
     obj = session.query(verbForm).filter_by(part2=verb).first()
     if obj is None:
         return None
     return obj.tolist()
 
-def exists(verb: str):
-    return session.query(verbForm).filter_by(part2=verb).first() is not None
 
-load_verbs(os.path.join( os.path.dirname(os.path.realpath(__file__)),"../words/verbs/verbs.txt"))
+def find_noun(noun: str):
+    obj = session.query(nounForm).filter_by(nominative=noun).first()
+    if obj is None:
+        return None
+    return obj.tolist()
+
+
+def exists(word: str, part):
+    if part == 'verb':
+        return session.query(verbForm).filter_by(part2=word).first() is not None
+    elif part == 'noun':
+        return session.query(nounForm).filter_by(nominative=word).first() is not None
+
+
+directory = os.path.dirname(os.path.realpath(__file__))
+try:
+    path = os.path.join(directory,"../words/verbs")
+    for f in os.listdir(path):
+        load_verbs(os.path.join(path, f))
+except FileNotFoundError:
+    pass
+
+try:
+    path = os.path.join(directory,"../words/nouns")
+    for f in os.listdir(path):
+        load_nouns(os.path.join(path, f))
+except FileNotFoundError:
+    pass
+
