@@ -4,7 +4,7 @@
 # you may install one using the install command or all of them using the all command.
 # For instance, in order to install a noun, do ./pkg install nouns/first
 
-URL="https://ola11-sources.herokuapp.com/"
+URL="https://ola11-sources.herokuapp.com"
 
 DIR=$(realpath "$(dirname "$0")")
 
@@ -13,11 +13,11 @@ mkdir -p $DIR/../words/nouns
 
 search() {
   if [ $# -eq 0 ]; then
-    curl https://ola11-sources.herokuapp.com/verb.php 2>/dev/null | sed "s/sources\///g" | sed "s/\.php//g"
-    curl https://ola11-sources.herokuapp.com/noun.php 2>/dev/null | sed "s/sources\///g" | sed "s/\.php//g"
+    curl $URL/verb.php 2>/dev/null | sed "s/sources\///g" | sed "s/\.php//g"
+    curl $URL/noun.php 2>/dev/null | sed "s/sources\///g" | sed "s/\.php//g"
   else
-    curl https://ola11-sources.herokuapp.com/verb.php 2>/dev/null | sed "s/sources\///g" | sed "s/\.php//g" | grep "$1"
-    curl https://ola11-sources.herokuapp.com/noun.php 2>/dev/null | sed "s/sources\///g" | sed "s/\.php//g" | grep "$1"
+    curl $URL/verb.php 2>/dev/null | sed "s/sources\///g" | sed "s/\.php//g" | grep "$1"
+    curl $URL/noun.php 2>/dev/null | sed "s/sources\///g" | sed "s/\.php//g" | grep "$1"
   fi
 }
 
@@ -30,9 +30,9 @@ list() {
 }
 
 exists() {
-  curl https://ola11-sources.herokuapp.com/verb.php 2>/dev/null | grep "sources/$1.php" >/dev/null
+  curl $URL/verb.php 2>/dev/null | grep "sources/$1.php" >/dev/null
   if [ $? -ne 0 ]; then
-    curl https://ola11-sources.herokuapp.com/noun.php 2>/dev/null | grep "sources/$1.php" >/dev/null
+    curl $URL/noun.php 2>/dev/null | grep "sources/$1.php" >/dev/null
     [ $? -eq 0 ] && return 0
     return 1
   fi
