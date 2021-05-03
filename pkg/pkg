@@ -11,11 +11,22 @@ DIR=$(realpath "$(dirname "$0")")
 mkdir -p $DIR/../words/verbs
 mkdir -p $DIR/../words/nouns
 
+search() {
+  if [ $# -eq 0 ]; then
+    curl https://ola11-sources.herokuapp.com/verb.php 2>/dev/null | sed "s/sources\///g" | sed "s/\.php//g"
+    curl https://ola11-sources.herokuapp.com/noun.php 2>/dev/null | sed "s/sources\///g" | sed "s/\.php//g"
+  else
+    curl https://ola11-sources.herokuapp.com/verb.php 2>/dev/null | sed "s/sources\///g" | sed "s/\.php//g" | grep "$1"
+    curl https://ola11-sources.herokuapp.com/noun.php 2>/dev/null | sed "s/sources\///g" | sed "s/\.php//g" | grep "$1"
+  fi
+}
+
 list() {
-  echo -e "Verbs:\n"
-  curl https://ola11-sources.herokuapp.com/verb.php 2>/dev/null | sed "s/sources\///g" | sed "s/\.php//g"
-  echo -e "\nNouns: \n"
-  curl https://ola11-sources.herokuapp.com/noun.php 2>/dev/null | sed "s/sources\///g" | sed "s/\.php//g"
+  if [ $# -eq 0 ]; then
+    [ ! -f "$DIR/pkg.lock" ] || cat $DIR/pkg.lock
+  else
+    [ ! -f "$DIR/pkg.lock" ] || grep "$1" $DIR/pkg.lock
+  fi
 }
 
 exists() {
@@ -31,7 +42,7 @@ exists() {
 }
 
 installed() {
-  grep "$1" $DIR/pkg.lock >/dev/null
+  [ -f "$DIR/pkg.lock" ] && grep "$1" $DIR/pkg.lock >/dev/null
   if [ $? -eq 0 ]; then
     echo "package $1 already installed"
     return 1
@@ -61,7 +72,7 @@ install() {
   esac
   echo "Installing $1" 1>&2
   echo "installing from $URL/sources/$1.php" 1>&2
-  curl "$URL/sources/$1.php" | sed "s/<br>//g" >>"$DIR/../words/$1.txt"
+  curl "$URL/sources/$1.php" 2>/dev/null | sed "s/<br>//g" >>"$DIR/../words/$1.txt"
   echo "$1" >>"$DIR/pkg.lock"
 }
 
