@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from . import rules
+from .rules import verb
 
 active = {
     "present": [
@@ -100,8 +100,8 @@ stems_passive = {
 }
 
 
-def get_conjugation(verb: str, voice: str, tense: str):
-    v = rules.Verb(verb)
+def get_conjugation(v: str, voice: str, tense: str):
+    v = verb.Verb(v)
     if v.conjugation == 4:
         return None, "irregular"
     if voice == "active":

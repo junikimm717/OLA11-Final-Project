@@ -2,44 +2,88 @@
 
 # pkg is a script for you to install OLA11 packages.
 # you may install one using the install command or all of them using the all command.
-# in order to clear all packages, use the remove command.
+# For instance, in order to install a noun, do ./pkg install nouns/first
 
 URL="https://ola11-sources.herokuapp.com/"
 
-DIR=$(realpath $(dirname $0))
+DIR=$(realpath "$(dirname "$0")")
 
 mkdir -p $DIR/../words/verbs
+mkdir -p $DIR/../words/nouns
 
-install() {
-    if [[ $1 -eq 0 || $1 -ge 5 ]]
-    then
-        echo "package $1 does not exist."
-        return
-    fi
-
-    grep "$1" $DIR/pkg.lock > /dev/null
-    if [ $? -eq 0 ]; then
-        echo "package $1 already installed"
-        return
-    fi
-    curl $URL/sources/$1.php | sed "s/<br>//g" >> $DIR/../words/verbs/verbs.txt
-    echo "$1" >> $DIR/pkg.lock
+packages() {
+  echo -e "Verbs:\n"
+  curl https://ola11-sources.herokuapp.com/verb.php 2>/dev/null | sed "s/sources\///g" | sed "s/\.php//g"
+  echo -e "\nNouns: \n"
+  curl https://ola11-sources.herokuapp.com/noun.php 2>/dev/null | sed "s/sources\///g" | sed "s/\.php//g"
 }
 
-all() {
-    install 1
-    install 2
-    install 3
-    install 4
+exists() {
+  echo "checking verbs" 1>&2
+  curl https://ola11-sources.herokuapp.com/verb.php 2>/dev/null | grep "sources/$1.php" >/dev/null
+  if [ $? -ne 0 ]; then
+    echo "checking nouns" 1>&2
+    curl https://ola11-sources.herokuapp.com/noun.php 2>/dev/null | grep "sources/$1.php" >/dev/null
+    [ $? -eq 0 ] && return 0
+    return 1
+  fi
+  return 0
+}
+
+installed() {
+  grep "$1" $DIR/pkg.lock >/dev/null
+  if [ $? -eq 0 ]; then
+    echo "package $1 already installed"
+    return 1
+  fi
+  return 0
+}
+
+install() {
+  echo "checking mirror..."
+  if ! exists "$1"; then
+    echo "$1 does not exist"
+    exit 1
+  fi
+
+  if ! installed $1; then
+    exit 1
+  fi
+
+  read -p "Are you sure you want to install $1? [Y/n]: " ANSWER
+  case $ANSWER in
+  "Y") ;;
+
+  *)
+    echo "installation of $1 aborted"
+    exit 1
+    ;;
+  esac
+  echo "Installing $1" 1>&2
+  echo "installing from $URL/sources/$1.php" 1>&2
+  curl "$URL/sources/$1.php" | sed "s/<br>//g" >>"$DIR/../words/$1.txt"
+  echo "$1" >>"$DIR/pkg.lock"
 }
 
 remove() {
-    echo "This will remove all of your existing packages."
-    rm -rf $DIR/../words/verbs/verbs.txt
-    rm -rf $DIR/pkg.lock
+  if ! exists "$1"; then
+    echo "$1 does not exist"
+    exit 1
+  fi
+  read -p "Are you sure you want to uninstall $1? [Y/n]: " ANSWER
+  case $ANSWER in
+  "Y") ;;
+  *)
+    echo "removal of $1 aborted"
+    exit 1
+  ;;
+  esac
+  rm -rf "$DIR/../words/$1.txt"
+  grep -v "$1" "$DIR/pkg.lock" >>"$DIR/pkg.lock.tmp"
+  mv "$DIR/pkg.lock.tmp" "$DIR/pkg.lock"
 }
-
 
 CMD=$1
 shift
+# shellcheck disable=SC2068
 $CMD $@
