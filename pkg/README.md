@@ -3,10 +3,16 @@
 This is a basic package manager that can, at the current moment, install nouns and 
 verbs for the user to use.
 
-In order to get all packages in the mirror,
+In order to search for locally installed packages,
 
 ```sh
-./pkg list
+./pkg list (pattern or none to display everything)
+```
+
+In order to search for packages on the mirror,
+
+```sh
+./pkg search (pattern or none to display everything)
 ```
 
 In order to install,
