@@ -11,7 +11,7 @@ DIR=$(realpath "$(dirname "$0")")
 mkdir -p $DIR/../words/verbs
 mkdir -p $DIR/../words/nouns
 
-packages() {
+list() {
   echo -e "Verbs:\n"
   curl https://ola11-sources.herokuapp.com/verb.php 2>/dev/null | sed "s/sources\///g" | sed "s/\.php//g"
   echo -e "\nNouns: \n"
