@@ -1,3 +1,10 @@
 # pkg
 
-This is not finished yet, but will be a package manager that can install irregulars to be processed by the api.
+This is a basic package manager that can, at the current moment, install verbs
+for the user.
+
+# Stuff to Implement
+
+- exceptions in verbs and nouns
+
+- being able to install nouns
