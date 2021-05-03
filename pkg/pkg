@@ -73,7 +73,7 @@ install() {
     esac
     echo "Installing $PKG" 1>&2
     echo "installing from $URL/sources/$PKG.php" 1>&2
-    curl "$URL/sources/$PKG.php" 2>/dev/null | sed "s/<br>//g" >>"$DIR/../words/$1.txt"
+    curl "$URL/sources/$PKG.php" 2>/dev/null | sed "s/<br>//g" >> "$DIR/../words/$PKG.txt"
     echo "$PKG" >>"$DIR/pkg.lock"
   done
 }
