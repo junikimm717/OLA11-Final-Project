@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
 
-from main import app
-
 
 def valid(args):
     if "verb" in args:
