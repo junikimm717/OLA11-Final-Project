@@ -1,57 +1,49 @@
 #!/usr/bin/env python3
 
 
-from sqlalchemy import *
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from pymongo import MongoClient
+from dataclasses import dataclass
 import os
 
-engine = create_engine('sqlite:///db.sqlite3', echo=False)
+client = MongoClient('localhost', 27017)
+verbdb = client['verbs'].verbs
+noundb = client['nouns'].nouns
 
-Base = declarative_base()
+verbdb.drop()
+noundb.drop()
 
+@dataclass
+class verbForm:
+    part1: str
+    part2: str
+    part3: str
+    part4: str
 
-class verbForm(Base):
-    __tablename__ = "verbs"
-
-    id = Column(Integer, primary_key=True)
-    part1 = Column(String)
-    part2 = Column(String)
-    part3 = Column(String)
-    part4 = Column(String)
-
-    def __init__(self, part1, part2, part3, part4):
-        self.part1 = part1
-        self.part2 = part2
-        self.part3 = part3
-        self.part4 = part4
+    def todict(self):
+        return {"part1": self.part1,
+                "part2": self.part2,
+                "part3": self.part3,
+                "part4": self.part4}
 
     def tolist(self):
         return [self.part1, self.part2, self.part3, self.part4]
 
 
-class nounForm(Base):
-    __tablename__ = "nouns"
-    id = Column(Integer, primary_key=True)
-    nominative = Column(String)
-    genitive = Column(String)
-    gender = Column(String)
-    istem = Column(Boolean)
-
-    def __init__(self, nominative, genitive, gender, istem=False):
-        self.nominative = nominative
-        self.genitive = genitive
-        self.gender = gender
-        self.istem = istem
+@dataclass
+class nounForm:
+    nominative: str
+    genitive: str
+    gender: str
+    istem: bool
+    
+    def todict(self):
+        return {"nominative": self.nominative,
+                "genitive": self.genitive,
+                "gender": self.gender,
+                "istem": self.istem}
 
     def tolist(self):
         return [self.nominative, self.genitive, self.gender, self.istem]
-
-
-Base.metadata.create_all(engine)
-
-Session = sessionmaker(bind=engine)
-session = Session()
 
 
 def load_verbs(path: str):
@@ -59,7 +51,7 @@ def load_verbs(path: str):
         lines = r.read().splitlines()
         for line in lines:
             lt = line.split()
-            session.add(verbForm(lt[0], lt[1], lt[2], lt[3]))
+            verbdb.insert_one(verbForm(lt[0], lt[1], lt[2], lt[3]).todict())
 
 
 def load_nouns(path: str):
@@ -67,28 +59,31 @@ def load_nouns(path: str):
         lines = r.read().splitlines()
         for line in lines:
             lt = line.split()
-            session.add(nounForm(lt[0], lt[1], lt[2], len(lt) == 4))
+            print(lt)
+            noundb.insert_one(nounForm(lt[0], lt[1], lt[2], len(lt) == 4).todict())
 
 
 def find_verb(verb: str):
-    obj = session.query(verbForm).filter_by(part2=verb).first()
+    obj = verbdb.find_one({"part2": verb})
     if obj is None:
         return None
+    obj = verbForm(obj["part1"], obj['part2'], obj['part3'], obj['part4'])
     return obj.tolist()
 
 
 def find_noun(noun: str):
-    obj = session.query(nounForm).filter_by(nominative=noun).first()
+    obj = noundb.find_one({"nominative": noun})
     if obj is None:
         return None
+    obj = nounForm(obj["nominative"], obj['genitive'], obj['gender'], obj['istem'])
     return obj.tolist()
 
 
 def exists(word: str, part):
     if part == 'verb':
-        return session.query(verbForm).filter_by(part2=word).first() is not None
+        return find_verb( word ) is not None
     elif part == 'noun':
-        return session.query(nounForm).filter_by(nominative=word).first() is not None
+        return find_noun( word ) is not None
 
 
 directory = os.path.dirname(os.path.realpath(__file__))
