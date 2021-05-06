@@ -61,7 +61,7 @@ install() {
     fi
 
     if ! installed "$PKG"; then
-    exit 1
+    	continue;
     fi
 
     if [ $FLAG != "--no-flag" ]; then
