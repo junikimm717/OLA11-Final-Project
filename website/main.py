@@ -8,7 +8,6 @@ import db
 
 app = Flask(__name__)
 
-
 @app.route('/')
 def index():
     return render_template("home.html")
@@ -49,4 +48,4 @@ def find(s: str):
 
 
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True)
